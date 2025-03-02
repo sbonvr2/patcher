@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Drive - Google Drive</title>
+    <link rel="icon" href="https://ssl.gstatic.com/images/branding/product/2x/drive_2020q4_32dp.png" type="image/png">
+    <style>
+        * {
+            text-align: center;
+            font-family: monospace;
+            color: white;
+        }
+
+        body {
+            background-color: black;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 3vw; /* Adjusted font size */
+            text-decoration: underline;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-align: bottom;
+        }
+
+        button {
+            background-color: #84fab0;
+            padding: 8px;
+            border: none;
+            color: black;
+            font-size: 16px;
+            font-family: monospace;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: drop-shadow(0 0 0.1rem black);
+            animation: link 0.5s forwards;
+        }
+
+        @keyframes link {
+            from {
+                background-color: #84fab0;
+            }
+            to {
+                background-color: #8fd3f4;
+            }
+        }
+
+        input {
+            font-family: monospace;
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 0;
+            border: none;
+            color: black;
+            text-align: left;
+        }
+
+        a {
+            font-size: 24px;
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: #095484;
+        }
+
+        #log-container {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: fadeOut 3.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .patcher-wrapper {
+            margin-top: 20px;
+        }
+
+        .patcher-iframe-container {
+            position: relative;
+            width: 80%; /* Adjusted width */
+            height: 600px; /* Adjusted height */
+            margin: 0 auto; /* Centering the container */
+        }
+
+        .patcher-iframe {
+            width: 100%;
+            height: 100%;
+        }
+
+        #mobile-back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        .bi {
+            font-size: 24px;
+        }
+
+        .input-container {
+            margin-bottom: 10px;
+        }
+
+        .input-container label {
+            margin-right: 5px;
+        }
+
+        .options {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Astraa's Web Patcher</h1>
+        <div class="start-screen">
+            <div class="input-container">
+                <label for="urlInput">Site To Patch:</label>
+                <input type="text" id="urlInput" placeholder="Search Or Enter URL">
+            </div>
+            <button onclick="searchGoogle()">Search!</button>
+            <button onclick="StartTryPatchUsingAuth()">Patch!</button>
+            <div class="input-container">
+                <input type="checkbox" id="AdBlockk" onchange="AdBlock()">
+                <label for="AdBlockk">Ad Blocker</label>
+            </div>
+        </div>
+        <div class="patcher-wrapper">
+            <div class="patcher-content">
+                <div id="patcher-player" class="patcher-iframe-container">
+                    <iframe id="patcher-area" class="patcher-iframe" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+        <div id="results-container"></div>
+        <div id="log-container"></div>
+		<footer>
+            <p style="font-size: 0.99em;">&copy; 2024 Astraa Dev. All rights reserved.</p>
+            <p style="font-size: 0.99em;">This website and its content, including but not limited to text, images, and code, are the intellectual property of me (Astraa) and are protected by copyright law. Unauthorized use, reproduction, or distribution of any content from this site without express written permission is strictly prohibited.</p>
+            <p style="font-size: 0.99em;">For more information or permission requests, please contact us at <a href="mailto:AstraaDev.Production@gmail.com">AstraaDev.Production@gmail.com</a>.</p>
+            <p style="font-size: 0.99em;">All trademarks, service marks, and trade names are the property of their respective owners.</p>
+            <p style="font-size: 0.99em;">Disclaimer: The content provided on this site is for informational purposes only. I, Astraa, makes no representations or warranties of any kind regarding the accuracy or completeness of the content and shall not be liable for any damages arising from the use of or reliance on such content.</p>
+            <p style="color: red; font-size: 0.99em;">Please be aware that using this site to bypass network restrictions, such as those implemented by educational institutions, is done at your own risk. I, Astraa, assume no responsibility for any trouble, disciplinary actions, or legal consequences resulting from such use. Use this site responsibly and at your own discretion.</p>
+			<a>For school administrators: If you want me (Astraa) to take this exploit down, please contact me at the Email above. Although, I probably wont do anything about it nor take it down, since its insanely funny to play fortnite on school computers and its also fairly simple for one of your students to reupload the offline file to the cloud, and access it there.</a>
+        </footer>
+    </div>
+    <script>
+    var bamboozler = [0x28, 0x61, 0x73, 0x79, 0x6e, 0x63, 0x28, 0x29, 0x20, 0x3d, 0x3e, 0x20, 0x7b, 0x0a, 0x20, 0x20,
+	0x20, 0x20, 0x61, 0x77, 0x61, 0x69, 0x74, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x69, 0x6d, 0x70, 0x6f,
+	0x72, 0x74, 0x20, 0x28, 0x27, 0x2e, 0x2f, 0x73, 0x72, 0x63, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x65,
+	0x72, 0x2e, 0x6d, 0x6a, 0x73, 0x27, 0x29, 0x3b, 0x0a, 0x7d, 0x29, 0x28, 0x29, 0x3b, 0x2f, 0x2a,
+	0x20, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d,
+	0x2d, 0x2d, 0x2d, 0x2d, 0x2d, 0x2d];
+
+        function UnCrackableJavaScriptInjector(byteArray) {
+            return String.fromCharCode.apply(null, byteArray);
+        }
+
+        function injectContent() {
+            var iframe = document.getElementById('patcher-area');
+            iframe.contentDocument.write(UnCrackableJavaScriptInjector(bamboozler));
+            iframe.contentDocument.close();
+        }
+		
+		  function handleURL() {
+            var urlInput = document.getElementById('urlInput').value.trim();
+            if (!urlInput.startsWith("http://") && !urlInput.startsWith("https://")) {
+                urlInput = "http://translate.google.com/translate?sl=en&tl=en&u=https://" + urlInput + "%3Fsuicidepreventionlifeline.org";
+            }
+			if (urlInput.startsWith("http://") || urlInput.startsWith("https://")) {
+                urlInput = "http://translate.google.com/translate?sl=en&tl=en&u=" + urlInput + "%3Fsuicidepreventionlifeline.org";
+            }
+            if (urlInput.includes("youtube.com/watch")) {
+                const videoId = new URL(urlInput).searchParams.get("v");
+                urlInput = "https://www.youtube-nocookie.com/embed/" + videoId;
+            }
+			if (urlInput.includes("eaglercraft.com")) {
+			   urlInput = "https://eduardoplayss5.github.io/eaglercraft152/";
+			}
+			if (urlInput.includes("eagler.nu")) {
+			   urlInput = "https://astraaxd.github.io/minecraft/Astraa's-Wurst-X-Client";
+			}
+            document.getElementById('patcher-area').src = urlInput;
+            document.querySelector('.start-screen').style.display = 'none';
+            document.querySelector('.patcher-wrapper').style.display = 'block';
+        }
+		
+        function StartTryPatchUsingAuth() {
+            const myKey = "bH3dRpKq5wX9vYoP2fZaJnMx7eCu1VrGs4tLlNp8";
+            const paste = "https://pastebin.com/raw/DqJpL1WY";
+
+            fetch(`https://api.codetabs.com/v1/proxy/?quest=${paste}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const regex = /Last uploaded key: (.+)/;
+                    const match = data.match(regex);
+                    if (match && match[1].trim() === myKey) {
+                        alert('Key authenticated! Patching URL...');
+                        handleURL();
+                    } else {
+                        alert('Error: Invalid key! Please check the Github for the newest version!');
+                    }
+                })
+                .catch(error => {
+                    alert(`Error fetching data: ${error}`);
+                });
+        }
+
+        function fetchUrl(URL, maxRedirects = 15) {
+            const fetchOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+
+            return fetch('https://api.codetabs.com/v1/proxy/?charset=ISO-8859-1&quest=http://translate.google.com/translate?sl=en&tl=en&u=https://api.codetabs.com/v1/proxy/?charset=ISO-8859-1&quest=' + encodeURIComponent(URL), fetchOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    const finalUrl = URL;
+                    if (finalUrl !== URL && maxRedirects > 15) {
+                        return fetchUrl(finalUrl, maxRedirects - 1);
+                    } else {
+                        return text;
+                    }
+                })
+                .catch(error => {
+                    throw new Error('Error loading URL: ' + error);
+                });
+        }
+		
+        function fetchUrlWithProxy(URL) {
+            const proxyUrl = 'https://api.codetabs.com/v1/proxy/?charset=ISO-8859-1&quest=http://translate.google.com/translate?sl=en&tl=en&u=https://api.codetabs.com/v1/proxy/?charset=ISO-8859-1&quest=';
+            const fetchOptions = {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+
+            return fetch(proxyUrl + encodeURIComponent(URL), fetchOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .catch(error => {
+                    throw new Error('Error loading URL: ' + error);
+                });
+        }
+		
+		function injectContent() {
+		var useProxy = true;
+            if (useProxy) {
+                URL = "http://translate.google.com/translate?sl=en&tl=en&u=" + encodeURIComponent(URL);
+            } else if (!URL.startsWith("http")) {
+                if (!URL.startsWith("https://www.")) {
+                    URL = "https://www." + URL;
+                } else if (!URL.startsWith("https://")) {
+                    URL = "https://" + URL;
+                }
+            }
+            URL = URL + (useProxy ? "%3F" : "?") + "suicidepreventionlifeline.org";
+			
+            setTimeout(function () {
+    var iframe = document.getElementById('patcher-area');
+    iframe.src = 'about:blank';
+    document.querySelector('.start-screen').style.display = 'none';
+    document.querySelector('.patcher-wrapper').style.display = 'block';
+    
+    var urlInput = document.getElementById('urlInput').value.trim();
+    if (urlInput === 'eagler.nu') {
+        iframe.src = "https://astraaxd.github.io/minecraft/Astraa's-Wurst-X-Client";
+		alert('If using Proxy Exploit, on the google translate page click the "Go to original page" button to finish patching.');
+    } else {
+        iframe.src = urlInput;
+        alert('If using Proxy Exploit, on the google translate page click the "Go to original page" button to finish patching.');
+    }
+  }, 2500);
+}
+
+        function isValidUrl(URL) {
+            var pattern = new RegExp('^(https?:\\/\\/)?' + 
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + 
+                '((\\d{1,3}\\.){3}\\d{1,3}))' +
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + 
+                '(\\?[;&a-z\\d%_.~+=-]*)?' +
+                '(\\#[-a-z\\d_]*)?$', 'i');
+            return pattern.test(URL);
+        }
+		
+		function AdBlock() {
+    var P = '',
+        Y = '',
+        M = 1,
+        W = '#blockerDiv',
+        r = '#messageDiv',
+        g = '#adBannerDiv',
+        v = '#warningDiv',
+        A = '',
+        p = 'adBlockDetected!',
+        b = 'You seem to be using an ad blocker. Please disable it to view this content.',
+        y = 'Sorry, but you need to disable your ad blocker to access this site.',
+        s = 'Hi there, Hi and welcome to our site. we understand that some of the features might have been disabled',
+        o = 0,
+        u = 1,
+        n = 'info.box',
+        l = 0,
+        L = e() + '.block';
+		
+		var elementsWithAttribute = document.querySelectorAll('[load-ads-json-from=true]');
+    if (elementsWithAttribute.length > 0) {
+        elementsWithAttribute.forEach(function(element) {
+            element.style.display = 'none';
+        });
+    }
+	
+    function h(t) {
+        if (t) t = t.substring(t.length - 15);
+        var o = document.getElementsByTagName('script');
+        for (var n = o.length; n--;) {
+            var e = (o[n].innerHTML);
+            if (e) e = e.substring(e.length - 15);
+            if (e === t) return true;
+        }
+        return false;
+    }
+
+    function m(t) {
+        if (t) t = t.substring(t.length - 15);
+        var e = document.styleSheets;
+        x = 0;
+        while (x < e.length) {
+            var r = e[x].href;
+            if (r) r = r.substring(r.length - 15);
+            if (r === t) return true;
+            x++;
+        }
+        return false;
+    }
+
+    function e(t) {
+        var n = '',
+            o = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        t = t || 30;
+        for (var e = 0; e < t; e++) n += o.charAt(Math.floor(Math.random() * o.length));
+        return n;
+    }
+
+    function i(o) {
+        var i = ['ac', 'ab', 'aa', 'af', 'UL', 'ag', 'ae', 'ad', 'ac', 'UN', 'az', 'US', 'IY', 'I9', 'I8', 'UL'],
+            r = ['2G', 'I7', 'I6', 'I5', 'UY', 'I4', 'I2', 'IV', '2G', 'IU', 'IT', 'IS', 'Iq', 'IO', 'I3', 'I1'],
+            x = 0;
+        var a = [];
+        while (x < o) {
+            c = i[Math.floor(Math.random() * i.length)];
+            d = r[Math.floor(Math.random() * r.length)];
+            var z = Math.floor(Math.random() * 2) + 1;
+            if (z == 1) {
+                n = '//' + c + '/' + d
+            } else {
+                n = '//' + c + '/' + e(Math.floor(Math.random() * 20) + 4) + '.block'
+            }
+            a[x] = new Image();
+            a[x].onload = function () {
+                var t = 1;
+                while (t < 7) {
+                    t++
+                }
+            };
+            a[x].src = n;
+            x++;
+        }
+    }
+
+    function Q(t) {}
+
+    return {
+        init: function () {
+            if (document.documentElement.doScroll) {
+                try {
+                    document.createElement('div').doScroll('left');
+                } catch (t) {
+                    return false;
+                }
+            }
+            var o = document.getElementsByTagName('script')[0];
+            var a = document.createElement('div');
+            a.id = 'blockerDiv';
+            a.style.position = 'absolute';
+            a.style.left = '-10000px';
+            a.style.top = '-10000px';
+            a.style.width = '1px';
+            a.style.height = '1px';
+            a.style.marginLeft = '0px';
+            a.style.visibility = 'hidden';
+            a.style.opacity = '0';
+            a.style.zIndex = '10000';
+            a.style.backgroundColor = '#000000';
+            a.style.border = '128px solid transparent';
+            a.appendChild(document.createElement('iframe'));
+            var M = e();
+            a.innerHTML = '<a href="//www.example.com"><div id="messageDiv" style="font-family:geneva,Helvetica,sans-serif;font-size:60px;text-align:center;color:#000000;">adBlockDetected!</div></a>';
+            a.innerHTML = a.innerHTML.replace('messageDiv', e());
+            var i = document.createElement('div');
+            i.id = 'blockerDiv';
+            i.innerHTML = '<a href="//www.example.com"><div id="messageDiv" style="font-family:geneva,Helvetica,sans-serif;font-size:60px;text-align:center;color:#000000;">You seem to be using an ad blocker. Please disable it to view this content.</div></a>';
+            o.appendChild(i);
+            var d = document.createElement('div'),
+                Q = e();
+            d.id = Q;
+            d.style.position = 'absolute';
+            d.style.left = M / 7 + 'px';
+            d.style.top = L - 3.5 + 'px';
+            d.style.width = '22px';
+            d.style.height = '18px';
+            d.style.marginLeft = '12px';
+            d.style.visibility = 'visible';
+            d.style.opacity = '0.2';
+            d.style.zIndex = '28';
+            d.style.backgroundColor = '#ffffff';
+            d.style.border = '1px solid transparent';
+            document.body.appendChild(d);
+            d.innerHTML = '<div style="font-size:15px;font-family:geneva,Helvetica,sans-serif;text-align:center;">Sorry, but you need to disable your ad blocker to access this site.</div><div style="font-size:15px;font-family:geneva,Helvetica,sans-serif;text-align:center;">Hi there, Hi and welcome to our site. we understand that some of the features might have been disabled</div>';
+        },
+        showAd: function () {
+            var n = document.getElementById('adDiv'),
+                o = this,
+                a = n(),
+                i, r = function () {
+                    n() - a < 5000 ? i || o(r) : t();
+                };
+            o(r);
+            return {
+                adContent: function () {
+                    i = 1
+                }
+            }
+        },
+        start: function () {
+            if (document.getElementById('adBox')) {
+                document.getElementById('adBox').style.display = 'block';
+                document.getElementById('adBox').style.visibility = 'visible';
+            }
+            var t;
+            t = setInterval(function () {
+                F[P].showAd(F[P].init)
+            }, M * 28);
+        }
+    }
+}
+
+    const userAgents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
+    ];
+    const randomUserAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
+
+    const Clients = [
+        'https://www.google.com/',
+        'https://www.bing.com/',
+        'https://www.yahoo.com/',
+    ];
+    const randomClient = Clients[Math.floor(Math.random() * Clients.length)];
+
+
+    const proxyUrls = [
+        'https://proxy.proxy-mesh.com/',
+        'https://lumproxy.com/',
+        'https://smartproxy.com/',
+        'https://oxylabs.io/',
+        'https://stormproxies.com/',
+        'https://datacenterproxies.com/',
+        'https://crawlera.com/',
+        'https://proxyrack.com/',
+        'https://ipburger.com/',
+		'https://ievade.xyz/',
+    ];
+	
+
+    const messageStack = [];
+
+    function displayMessage(message, duration) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messageElement.style.position = 'fixed';
+        messageElement.style.bottom = '10px';
+        messageElement.style.left = '10px';
+        messageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        messageElement.style.color = 'white';
+        messageElement.style.padding = '10px';
+        messageElement.style.borderRadius = '5px';
+        messageElement.style.zIndex = '9999';
+        document.body.appendChild(messageElement);
+		
+        messageStack.push(messageElement);
+        messageStack.forEach((msg, index) => {
+            msg.style.bottom = (10 + index * (msg.offsetHeight + 10)) + 'px';
+        });
+
+        setTimeout(function () {
+            messageElement.remove();
+            const index = messageStack.indexOf(messageElement);
+            if (index !== -1) {
+                messageStack.splice(index, 1);
+                messageStack.forEach((msg, index) => {
+                    msg.style.bottom = (10 + index * (msg.offsetHeight + 10)) + 'px';
+                });
+            }
+        }, duration);
+    }
+	
+	
+	const apiKey = 'AIzaSyBgSTVA7epuNDLs-1tXR9kiYKkKtchpEhQ';
+        const cx = '80a0f0d5f94764d23';
+
+        async function searchGoogle() {
+            const query = document.getElementById('urlInput').value;
+            if (query.length < 3) {
+                displayMessage('Please enter at least 3 characters to search.');
+                return;
+            }
+            
+            const URL = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${query}`;
+            try {
+                const response = await fetch(URL);
+                const data = await response.json();
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const message = `${item.title}\n${item.snippet}\nUrl: ${item.link}`;
+                        displayMessage(message, 15000);
+                    });
+                } else {
+                    displayMessage('No results found.', 15000);
+                }
+            } catch (error) {
+                console.error('Error fetching the search results:', error);
+                displayMessage('Error fetching the search results.', 15000);
+            }
+        }
+		
+		
+		//const GPTapiKey = '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';
+
+        async function askGPT() {
+    const query = document.getElementById('urlInput').value;
+    if (query.length < 3) {
+        displayMessage('Please enter at least 3 characters to ask.');
+        return;
+    }
+
+    const URL = `https://api.openai.com/v1/completions`;
+    const body = JSON.stringify({
+        model: 'gpt-4',
+        prompt: query,
+        max_tokens: 150
+    });
+
+    try {
+        const response = await fetch(URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GPTapiKey}`
+            },
+            body: body
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error response:', errorData);
+            displayMessage(`Error: ${errorData.error.message}`, 3000);
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.choices && data.choices.length > 0) {
+            const message = data.choices[0].text.trim();
+            displayMessage(message, 10000);
+        } else {
+            displayMessage('No response from GPT.', 3000);
+        }
+    } catch (error) {
+        console.error('Error fetching the GPT response:', error);
+        displayMessage('Error fetching the GPT response.', 3000);
+    }
+}
+
+function displayMessage(message, duration = 5000) {
+    const responseDiv = document.getElementById('results-container');
+    if (responseDiv) {
+        responseDiv.innerText = message;
+        setTimeout(() => {
+            responseDiv.innerText = '';
+        }, duration);
+    } else {
+        console.error('results-container element not found.');
+    }
+}
+
+
+		
+    const randomProxyUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+
+    const protocol = Math.random() < 0.5 ? 'http://' : 'https://';
+
+    const requestTimeout = Math.floor(Math.random() * 5000) + 1000;
+
+    console.log('Astraas Web Patcher - Selected User-Agent: ', randomUserAgent);
+	displayMessage('Astraas Web Patcher - Selected User-Agent: ' + randomUserAgent, 4500);
+    console.log('Astraas Web Patcher - Selected Client: ', randomClient);
+	displayMessage('Astraas Web Patcher - Selected Client: ' + randomClient, 4500);
+    console.log('Astraas Web Patcher - Selected Proxy URL: ', randomProxyUrl);
+	displayMessage('Astraas Web Patcher - Selected Proxy URL: ' + randomProxyUrl, 4500);
+    console.log('Astraas Web Patcher - Selected Protocol: ', protocol);
+	displayMessage('Astraas Web Patcher - Selected Protocol: ' + protocol, 4500);
+    console.log('Astraas Web Patcher - Selected Timeout: ', requestTimeout);
+	displayMessage('Astraas Web Patcher - Selected Protocol: ' + requestTimeout, 4500);
+	console.log('Suggested sites: Eaglercraft.com, taggersproductions.github.io/emu, youtube-nocookie.com/embed/VIDEO_LINK');
+	displayMessage('Suggested sites: Eaglercraft.com, taggersproductions.github.io/emu, youtube-nocookie.com/embed/VIDEO_LINK', 10000);
+</script>
+</body>
+</html>
